@@ -24,6 +24,8 @@ from .clifford import (
     Rotor,
     geometric_product,
     sandwich_product,
+    inner_product,
+    wedge_product,
     ThresholdMode,
 )
 
@@ -37,17 +39,22 @@ from .triplet_logic import (
     logical_not,
     implication_loss,
     equivalence_loss,
+    rotor_consistency_loss,
 )
 
 from .policy_encoder import (
     PolicyEncoder,
     PolicyChain,
+    PolicyValidator,
     VerificationMode,
     verify_llm_answer,
+    verify_policy_chain,
+    build_policy_from_triplets,
 )
 
 from .counterfactual import (
     CounterfactualReasoner,
+    CounterfactualExplainer,
     rotor_trajectory,
     counterfactual_robustness_loss,
 )
@@ -60,6 +67,8 @@ __all__ = [
     "Rotor",
     "geometric_product",
     "sandwich_product",
+    "inner_product",
+    "wedge_product",
     "ThresholdMode",
     # Triplet logic
     "TripletState",
@@ -71,13 +80,18 @@ __all__ = [
     "logical_not",
     "implication_loss",
     "equivalence_loss",
+    "rotor_consistency_loss",
     # Policy encoding
     "PolicyEncoder",
     "PolicyChain",
+    "PolicyValidator",
     "VerificationMode",
     "verify_llm_answer",
+    "verify_policy_chain",
+    "build_policy_from_triplets",
     # Counterfactual reasoning
     "CounterfactualReasoner",
+    "CounterfactualExplainer",
     "rotor_trajectory",
     "counterfactual_robustness_loss",
 ]
