@@ -1,0 +1,285 @@
+# NeuraLog Supported Models Configuration
+# This file contains metadata for all supported LLM and embedding models
+
+# Large Language Models (LLMs)
+llm_models:
+  # Recommended Models for Production
+
+  qwen_qwq_32b:
+    name: "Qwen/QwQ-32B-Preview"
+    provider: "vllm"
+    parameters: 32_000_000_000
+    context_length: 32768
+    recommended_gpus: 1
+    gpu_type: "H200"
+    gpu_memory_required: "60GB"
+    dtype: "bfloat16"
+    features:
+      - "reasoning"
+      - "step-by-step"
+      - "long-context"
+    recommended_for:
+      - "General purpose"
+      - "Financial compliance"
+      - "Policy analysis"
+      - "Knowledge extraction"
+    config_file: "production_qwen_qwq.yaml"
+    throughput_estimate: "~100 tokens/sec"
+    cost_effectiveness: "excellent"
+    reasoning_quality: "very-good"
+
+  deepseek_r1:
+    name: "deepseek-ai/DeepSeek-R1"
+    provider: "vllm"
+    parameters: 671_000_000_000
+    context_length: 16384
+    recommended_gpus: 4
+    gpu_type: "H200"
+    gpu_memory_required: "520GB"  # Total across 4 GPUs
+    dtype: "bfloat16"
+    features:
+      - "advanced-reasoning"
+      - "chain-of-thought"
+      - "frontier-model"
+    recommended_for:
+      - "Complex reasoning tasks"
+      - "Research applications"
+      - "Enterprise deployments"
+    config_file: "production_deepseek_r1.yaml"
+    throughput_estimate: "~25 tokens/sec"
+    cost_effectiveness: "low"
+    reasoning_quality: "excellent"
+    notes: "Requires multi-GPU setup with Ray"
+
+  qwen_2_5_72b:
+    name: "Qwen/Qwen2.5-72B-Instruct"
+    provider: "vllm"
+    parameters: 72_000_000_000
+    context_length: 131072
+    recommended_gpus: 2
+    gpu_type: "H200"
+    gpu_memory_required: "140GB"
+    dtype: "bfloat16"
+    features:
+      - "ultra-long-context"
+      - "instruction-following"
+      - "multilingual"
+    recommended_for:
+      - "Long document processing"
+      - "Multi-document analysis"
+      - "General instruction following"
+    throughput_estimate: "~60 tokens/sec"
+    cost_effectiveness: "good"
+    reasoning_quality: "good"
+
+  llama_3_1_70b:
+    name: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+    provider: "vllm"
+    parameters: 70_000_000_000
+    context_length: 131072
+    recommended_gpus: 2
+    gpu_type: "H200"
+    gpu_memory_required: "140GB"
+    dtype: "bfloat16"
+    features:
+      - "ultra-long-context"
+      - "instruction-following"
+      - "tool-use"
+    recommended_for:
+      - "Long document processing"
+      - "General purpose"
+      - "Tool integration"
+    throughput_estimate: "~60 tokens/sec"
+    cost_effectiveness: "good"
+    reasoning_quality: "good"
+
+  # Smaller Models (for development/testing)
+
+  qwen_2_5_7b:
+    name: "Qwen/Qwen2.5-7B-Instruct"
+    provider: "vllm"
+    parameters: 7_000_000_000
+    context_length: 131072
+    recommended_gpus: 1
+    gpu_type: "Any GPU with 16GB+"
+    gpu_memory_required: "14GB"
+    dtype: "bfloat16"
+    features:
+      - "ultra-long-context"
+      - "fast-inference"
+      - "cost-effective"
+    recommended_for:
+      - "Development"
+      - "Testing"
+      - "Resource-constrained environments"
+    throughput_estimate: "~200 tokens/sec"
+    cost_effectiveness: "excellent"
+    reasoning_quality: "moderate"
+
+  mistral_7b:
+    name: "mistralai/Mistral-7B-Instruct-v0.3"
+    provider: "vllm"
+    parameters: 7_000_000_000
+    context_length: 32768
+    recommended_gpus: 1
+    gpu_type: "Any GPU with 16GB+"
+    gpu_memory_required: "14GB"
+    dtype: "bfloat16"
+    features:
+      - "fast-inference"
+      - "instruction-following"
+    recommended_for:
+      - "Development"
+      - "Testing"
+      - "Quick prototyping"
+    throughput_estimate: "~200 tokens/sec"
+    cost_effectiveness: "excellent"
+    reasoning_quality: "moderate"
+
+# Embedding Models
+embedding_models:
+
+  mpnet_base:
+    name: "sentence-transformers/all-mpnet-base-v2"
+    provider: "sentence-transformers"
+    dimensions: 768
+    max_sequence_length: 384
+    model_size: "420MB"
+    recommended_for:
+      - "General purpose embeddings"
+      - "Semantic search"
+      - "Default choice"
+    performance: "balanced"
+
+  minilm_l6:
+    name: "sentence-transformers/all-MiniLM-L6-v2"
+    provider: "sentence-transformers"
+    dimensions: 384
+    max_sequence_length: 256
+    model_size: "80MB"
+    recommended_for:
+      - "Fast embeddings"
+      - "Resource-constrained"
+      - "Large-scale processing"
+    performance: "fast"
+
+  gte_large:
+    name: "thenlper/gte-large"
+    provider: "sentence-transformers"
+    dimensions: 1024
+    max_sequence_length: 512
+    model_size: "670MB"
+    recommended_for:
+      - "High-quality embeddings"
+      - "Semantic search"
+      - "Retrieval tasks"
+    performance: "high-quality"
+
+  bge_large:
+    name: "BAAI/bge-large-en-v1.5"
+    provider: "sentence-transformers"
+    dimensions: 1024
+    max_sequence_length: 512
+    model_size: "1.3GB"
+    recommended_for:
+      - "State-of-the-art retrieval"
+      - "Semantic search"
+      - "RAG applications"
+    performance: "best"
+    notes: "Add instruction: 'Represent this sentence for searching relevant passages:'"
+
+  e5_large:
+    name: "intfloat/e5-large-v2"
+    provider: "sentence-transformers"
+    dimensions: 1024
+    max_sequence_length: 512
+    model_size: "1.3GB"
+    recommended_for:
+      - "High-quality embeddings"
+      - "Multilingual support"
+      - "Diverse tasks"
+    performance: "excellent"
+    notes: "Prefix queries with 'query:' and passages with 'passage:'"
+
+# Model Download Configurations
+download_config:
+  cache_dir: "~/.cache/huggingface/hub"
+
+  # HuggingFace Hub settings
+  hf_hub:
+    token_env: "HF_TOKEN"
+    endpoint: "https://huggingface.co"
+
+  # Model-specific download options
+  download_options:
+    qwen_qwq_32b:
+      revision: "main"
+      local_files_only: false
+      trust_remote_code: true
+
+    deepseek_r1:
+      revision: "main"
+      local_files_only: false
+      trust_remote_code: true
+      # Note: Large download (~1.3TB)
+      allow_patterns: ["*.safetensors", "*.json", "tokenizer*"]
+
+    qwen_2_5_72b:
+      revision: "main"
+      local_files_only: false
+      trust_remote_code: true
+
+    llama_3_1_70b:
+      revision: "main"
+      local_files_only: false
+      trust_remote_code: false
+      # Note: Requires HF authentication and Meta license agreement
+
+# Model Selection Guide
+selection_guide:
+  by_use_case:
+    "financial_compliance":
+      recommended: "qwen_qwq_32b"
+      alternatives: ["deepseek_r1", "qwen_2_5_72b"]
+
+    "long_document_analysis":
+      recommended: "qwen_2_5_72b"
+      alternatives: ["llama_3_1_70b", "qwen_qwq_32b"]
+
+    "complex_reasoning":
+      recommended: "deepseek_r1"
+      alternatives: ["qwen_qwq_32b"]
+
+    "development_testing":
+      recommended: "qwen_2_5_7b"
+      alternatives: ["mistral_7b"]
+
+    "general_purpose":
+      recommended: "qwen_qwq_32b"
+      alternatives: ["qwen_2_5_72b", "llama_3_1_70b"]
+
+  by_gpu_count:
+    "1_gpu":
+      models: ["qwen_qwq_32b", "qwen_2_5_7b", "mistral_7b"]
+      recommended: "qwen_qwq_32b"
+
+    "2_gpu":
+      models: ["qwen_2_5_72b", "llama_3_1_70b"]
+      recommended: "qwen_2_5_72b"
+
+    "4_gpu":
+      models: ["deepseek_r1"]
+      recommended: "deepseek_r1"
+
+  by_budget:
+    "low_cost":
+      recommended: "qwen_qwq_32b"
+      note: "Single H200, excellent cost-effectiveness"
+
+    "balanced":
+      recommended: "qwen_2_5_72b"
+      note: "2x H200, good balance of capability and cost"
+
+    "maximum_capability":
+      recommended: "deepseek_r1"
+      note: "4x H200, highest reasoning quality"

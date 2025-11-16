@@ -87,22 +87,55 @@ NeuraLog integrates **five** cutting-edge approaches in neural symbolic AI:
 
 - Python 3.11 or higher
 - Java 11+ (for OWLAPI via DeepOnto)
+- CUDA 12.1+ (for H200 GPU deployment)
 
-### From Source
+### Quick Install
 
 ```bash
 # Clone the repository
 git clone https://github.com/yourusername/neuralog.git
 cd neuralog
 
-# Install dependencies
-pip install -e .
+# Option 1: Install with pip (recommended)
+pip install -e .                    # Core dependencies
+pip install -e ".[production]"      # + vLLM for H200 GPU
+pip install -e ".[dev]"             # + Development tools
+pip install -e ".[all]"             # Everything
 
-# For development
-pip install -e ".[dev]"
+# Option 2: Install with requirements.txt
+pip install -r requirements.txt                         # Core
+pip install -r requirements.txt -r requirements-production.txt  # Production
+pip install -r requirements.txt -r requirements-dev.txt         # Development
+```
 
-# For all features
-pip install -e ".[all]"
+**Available dependency groups:**
+- `production` - vLLM, Ray, Flash Attention (for H200 GPU)
+- `dev` - Testing, linting, documentation tools
+- `graph` - Graph neural networks (PyG, DGL)
+- `langchain` - LangChain integration
+- `all` - All optional dependencies
+
+**📖 Full Installation Guide**: See [docs/INSTALLATION.md](docs/INSTALLATION.md) for:
+- System dependencies and GPU setup
+- Virtual environment configuration
+- Model download instructions
+- Troubleshooting common issues
+
+### Download Models
+
+NeuraLog supports downloading models using HuggingFace CLI:
+
+```bash
+# Download recommended model (QwQ-32B)
+./scripts/download_models.sh qwen-qwq-32b
+
+# Or use Python script
+python scripts/manage_models.py download qwen-qwq-32b
+
+# List available models
+python scripts/manage_models.py list
+
+# See all supported models in configs/models.yaml
 ```
 
 ### Configuration

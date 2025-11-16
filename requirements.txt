@@ -1,0 +1,52 @@
+# NeuraLog Core Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core Python libraries
+numpy>=1.24.0,<2.0.0
+scipy>=1.10.0
+pandas>=2.0.0
+
+# Deep Learning
+torch>=2.1.0,<2.5.0
+transformers>=4.40.0
+accelerate>=0.20.0
+sentencepiece>=0.1.99
+tokenizers>=0.15.0
+
+# Ontology and Knowledge Graphs
+deeponto>=0.8.0
+owlready2>=0.41
+rdflib>=6.3.0
+networkx>=3.0
+
+# Embeddings
+sentence-transformers>=2.2.2
+gensim>=4.3.0
+
+# Formal Verification
+z3-solver>=4.12.0
+
+# LLM Integration
+openai>=1.0.0
+anthropic>=0.18.0
+
+# Configuration and Utilities
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+PyYAML>=6.0
+click>=8.1.0
+
+# Storage
+redis>=5.0.0
+faiss-cpu>=1.7.4  # Use faiss-gpu for GPU acceleration
+
+# Utilities
+tqdm>=4.65.0
+loguru>=0.7.0
+tenacity>=8.2.0
+
+# Jupyter support (optional but useful)
+ipython>=8.12.0
+jupyterlab>=4.0.0
+ipywidgets>=8.0.0
