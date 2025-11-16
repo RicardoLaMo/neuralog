@@ -343,18 +343,26 @@ See the `examples/` directory:
 
 - `simple_extraction.py`: Basic usage
 - `biomedical_extraction.py`: Domain-specific extraction with ontology
-- **`semantic_workspace_demo.py`**: **NEW** - Demonstrates graph dynamics vs. chunking
-- **`financial_compliance_demo.ipynb`**: **NEW** - Jupyter notebook showing neurosymbolic compliance analysis
+- **`semantic_workspace_demo.py`**: Demonstrates graph dynamics vs. chunking
+- **`financial_compliance_demo.ipynb`**: Jupyter notebook showing neurosymbolic compliance analysis
+- **`geometric_verification_example.py`**: **NEW** - Geometric logic validation with 100% accuracy
+- **`hybrid_verification_example.py`**: **NEW** - Tri-modal verification (Neural + Symbolic + Geometric)
+- **`geometric_logic_demo.ipynb`**: **NEW** - Interactive tutorial with visualizations
 
 Run examples:
 
 ```bash
 python examples/simple_extraction.py
 python examples/biomedical_extraction.py
-python examples/semantic_workspace_demo.py  # NEW: See semantic layer in action!
+python examples/semantic_workspace_demo.py
 
-# Run Jupyter notebook
+# Geometric logic examples (NEW!)
+python examples/geometric_verification_example.py  # 7 test cases, 100% accuracy
+python examples/hybrid_verification_example.py     # Tri-modal verification demo
+
+# Run Jupyter notebooks
 jupyter notebook examples/financial_compliance_demo.ipynb
+jupyter notebook examples/geometric_logic_demo.ipynb  # Interactive geometric reasoning!
 ```
 
 ### Featured: Financial Compliance Demo
@@ -369,6 +377,19 @@ The [financial_compliance_demo.ipynb](examples/financial_compliance_demo.ipynb) 
    - Temporal reasoning (45-day notice periods, etc.)
    - Causal chain inference
 4. **Explainable Results**: Full reasoning steps with audit trails
+
+### Featured: Geometric Logic Demo
+
+The [geometric_logic_demo.ipynb](examples/geometric_logic_demo.ipynb) notebook demonstrates:
+
+1. **Triplet Encoding**: Convert policies to geometric representations in Clifford algebra Cl(3,0)
+2. **Policy Chains**: Complex logical expressions via rotor composition
+3. **LLM Verification**: Detect false positives and false negatives with bidirectional checking
+4. **Counterfactual Analysis**: "What-if" reasoning via smooth geometric trajectories
+5. **Tri-Modal Validation**: Combine Neural + Symbolic + Geometric for hybrid confidence
+6. **3D Visualizations**: Interactive plots of triplet states and decision boundaries
+
+**Key Results**: 100% accuracy on realistic policies with HARD/MARGIN threshold modes
 
 ## Use Cases
 
