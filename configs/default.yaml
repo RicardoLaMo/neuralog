@@ -1,0 +1,63 @@
+# NeuraLog Default Configuration
+
+# General settings
+debug: false
+log_level: "INFO"
+
+# Paths
+base_dir: "."
+models_dir: "./models"
+data_dir: "./data"
+cache_dir: "./.cache"
+
+# LLM Configuration
+llm:
+  provider: "openai"  # openai, anthropic, ollama
+  model: "gpt-4"
+  # api_key: "your-api-key-here"  # Or set NEURALOG_LLM_API_KEY env var
+  temperature: 0.1
+  max_tokens: 4096
+  top_p: 0.95
+
+# Ontology Configuration
+ontology:
+  reasoner: "elk"  # elk, hermit, pellet
+  owl_profile: "OWL2_EL"
+  enable_reasoning: true
+  max_axioms: 100000
+
+# Embedding Configuration
+embedding:
+  model: "sentence-transformers/all-mpnet-base-v2"
+  dimension: 768
+  batch_size: 32
+  device: "cpu"  # cpu, cuda, mps
+
+  # Graph embedding specific
+  walk_length: 80
+  num_walks: 10
+  window_size: 10
+  embedding_dim: 128
+  workers: 4
+
+# Verification Configuration
+verification:
+  enable_verification: true
+  solver: "z3"
+  timeout: 30  # seconds
+  soundness_threshold: 0.99
+
+# Storage Configuration
+storage:
+  triple_store: "memory"  # memory, jena, rdfox
+  vector_store: "chroma"
+  vector_store_path: "./data/vector_store"
+  document_store_path: "./data/documents"
+
+# Extraction Configuration
+extraction:
+  confidence_threshold: 0.7
+  max_entities_per_document: 1000
+  max_triples_per_document: 5000
+  enable_coreference: true
+  enable_entity_linking: true
