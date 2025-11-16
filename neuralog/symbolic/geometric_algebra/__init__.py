@@ -16,6 +16,13 @@ High-Performance Components:
 - VerificationMetrics: Accuracy, calibration, and performance tracking
 - NeuraLogGASystem: Unified end-to-end reasoning engine
 - PolicyExtractorPipeline: LLM-integrated extraction with policy verification
+
+CUDA Optimization (H200):
+- CUDABatchedPolicyVerifier: Custom CUDA kernels for 30-50% speedup
+- Fused threshold evaluation kernels
+- Memory-optimized tensor operations
+- CUDA graph scheduling for kernel reuse
+- H200 performance monitoring and benchmarking
 """
 
 from neuralog.symbolic.geometric_algebra.batched_verifier import (
@@ -26,6 +33,18 @@ from neuralog.symbolic.geometric_algebra.batched_verifier import (
 from neuralog.symbolic.geometric_algebra.counterfactual_reasoner import (
     CounterfactualExplanation,
     CounterfactualReasoner,
+)
+from neuralog.symbolic.geometric_algebra.cuda_batched_verifier import (
+    CUDABatchedPolicyVerifier,
+)
+from neuralog.symbolic.geometric_algebra.cuda_kernels import (
+    CUDAGraphScheduler,
+    CUDAKernelConfig,
+    FusedThresholdKernel,
+    GeometricProductKernel,
+    H200PerformanceMonitor,
+    MemoryOptimizer,
+    TruthDegreeKernel,
 )
 from neuralog.symbolic.geometric_algebra.multivector import Multivector
 from neuralog.symbolic.geometric_algebra.neuralog_system import (
@@ -84,4 +103,13 @@ __all__ = [
     "PolicyExtractorPipeline",
     "ExtractedFact",
     "RefinementFeedback",
+    # CUDA Optimization
+    "CUDABatchedPolicyVerifier",
+    "CUDAKernelConfig",
+    "FusedThresholdKernel",
+    "GeometricProductKernel",
+    "TruthDegreeKernel",
+    "MemoryOptimizer",
+    "CUDAGraphScheduler",
+    "H200PerformanceMonitor",
 ]
