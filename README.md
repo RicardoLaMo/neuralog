@@ -185,6 +185,52 @@ similar = engine.graph_embedder.find_similar_entities(
 )
 ```
 
+## Project Structure
+
+```
+neuralog/
+├── neuralog/                  # Main package
+│   ├── core/                  # Core engine, config, types
+│   ├── symbolic/              # Ontology and reasoning
+│   ├── neural/                # LLM and embeddings
+│   ├── integration/           # Neural-symbolic components
+│   ├── utils/                 # Utilities and logging
+│   ├── cli/                   # Command-line interface
+│   └── extensions/            # Extension points for custom implementations
+├── tests/                     # Comprehensive test suite
+│   ├── unit/                  # Unit tests
+│   ├── integration/           # Integration tests
+│   └── fixtures/              # Test data and fixtures
+├── examples/                  # Example scripts
+├── configs/                   # Configuration files
+├── docs/                      # Comprehensive documentation
+│   ├── EXTENSION_GUIDE.md    # How to extend NeuraLog
+│   ├── DEPLOYMENT.md         # Deployment guide
+│   └── CHANGELOG.md          # Version history
+├── scripts/                   # Utility scripts
+├── deployment/                # Docker and K8s configs
+├── benchmarks/                # Performance benchmarks
+├── CONTRIBUTING.md            # Contribution guidelines
+├── API.md                     # API reference
+└── README.md                  # This file
+```
+
+## Documentation
+
+**Getting Started:**
+- [Quick Start](#quick-start) - Basic usage
+- [Configuration](#configuration) - Configuration options
+- [Examples](#examples) - Example scripts
+
+**Development & Extension:**
+- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+- [API.md](API.md) - Complete API reference
+- [docs/EXTENSION_GUIDE.md](docs/EXTENSION_GUIDE.md) - How to extend NeuraLog
+- [ARCHITECTURE.md](ARCHITECTURE.md) - System design details
+
+**Deployment & Operations:**
+- [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) - Deployment guide for Docker, K8s, AWS, etc.
+
 ## Examples
 
 See the `examples/` directory:
