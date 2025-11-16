@@ -15,6 +15,7 @@ High-Performance Components:
 - CounterfactualReasoner: Gradient-based policy refinement
 - VerificationMetrics: Accuracy, calibration, and performance tracking
 - NeuraLogGASystem: Unified end-to-end reasoning engine
+- PolicyExtractorPipeline: LLM-integrated extraction with policy verification
 """
 
 from neuralog.symbolic.geometric_algebra.batched_verifier import (
@@ -36,6 +37,11 @@ from neuralog.symbolic.geometric_algebra.policy import (
     Policy,
     PolicyCondition,
     PolicyRule,
+)
+from neuralog.symbolic.geometric_algebra.policy_extractor_pipeline import (
+    ExtractedFact,
+    PolicyExtractorPipeline,
+    RefinementFeedback,
 )
 from neuralog.symbolic.geometric_algebra.triplet_logic import (
     ThresholdMode,
@@ -74,4 +80,8 @@ __all__ = [
     "NeuraLogGASystem",
     "PolicyVerificationResult",
     "SystemConfig",
+    # LLM Integration
+    "PolicyExtractorPipeline",
+    "ExtractedFact",
+    "RefinementFeedback",
 ]
