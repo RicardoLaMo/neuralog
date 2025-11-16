@@ -21,6 +21,12 @@ try:
 except ImportError:
     ANTHROPIC_AVAILABLE = False
 
+try:
+    from vllm import LLM, SamplingParams
+    VLLM_AVAILABLE = True
+except ImportError:
+    VLLM_AVAILABLE = False
+
 from neuralog.core.config import LLMConfig
 from neuralog.core.types import PromptTemplate
 
@@ -71,8 +77,53 @@ class LLMInterface:
                 base_url=self.config.base_url or "http://localhost:11434/v1",
                 api_key="ollama"  # Ollama doesn't require API key
             )
+        elif self.config.provider == "vllm":
+            # vLLM for local GPU inference (H200)
+            if not VLLM_AVAILABLE:
+                raise ImportError(
+                    "vLLM not available. Install with: pip install 'neuralog[production]'"
+                )
+            self._initialize_vllm()
+        elif self.config.provider == "vllm-server":
+            # vLLM OpenAI-compatible server
+            if not OPENAI_AVAILABLE:
+                raise ImportError("OpenAI client needed for vLLM server")
+            self.client = OpenAI(
+                base_url=self.config.base_url or "http://localhost:8000/v1",
+                api_key="vllm"  # vLLM server doesn't require API key
+            )
         else:
             raise ValueError(f"Unknown LLM provider: {self.config.provider}")
+
+    def _initialize_vllm(self):
+        """Initialize vLLM engine for local inference."""
+        logger.info(f"Initializing vLLM with model: {self.config.model}")
+
+        # Get vLLM-specific config from extra params
+        gpu_memory_utilization = getattr(self.config, 'gpu_memory_utilization', 0.9)
+        tensor_parallel_size = getattr(self.config, 'tensor_parallel_size', 1)
+        max_model_len = getattr(self.config, 'max_model_len', None)
+        trust_remote_code = getattr(self.config, 'trust_remote_code', True)
+        dtype = getattr(self.config, 'dtype', 'auto')  # auto, float16, bfloat16
+
+        # Initialize vLLM engine
+        self.vllm_engine = LLM(
+            model=self.config.model,
+            tensor_parallel_size=tensor_parallel_size,
+            gpu_memory_utilization=gpu_memory_utilization,
+            max_model_len=max_model_len,
+            trust_remote_code=trust_remote_code,
+            dtype=dtype,
+            enforce_eager=False,  # Use CUDA graphs for speed
+            disable_log_stats=False,
+        )
+
+        logger.info(
+            f"vLLM engine initialized: "
+            f"GPU mem={gpu_memory_utilization}, "
+            f"TP={tensor_parallel_size}, "
+            f"dtype={dtype}"
+        )
 
     def generate(
         self,
@@ -98,7 +149,11 @@ class LLMInterface:
         temp = temperature if temperature is not None else self.config.temperature
         max_tok = max_tokens if max_tokens is not None else self.config.max_tokens
 
-        if self.config.provider in ["openai", "ollama"]:
+        if self.config.provider == "vllm":
+            # Direct vLLM inference
+            return self._generate_vllm(prompt, system_message, temp, max_tok, **kwargs)
+
+        elif self.config.provider in ["openai", "ollama", "vllm-server"]:
             messages = []
             if system_message:
                 messages.append({"role": "system", "content": system_message})
@@ -126,6 +181,51 @@ class LLMInterface:
 
         else:
             raise NotImplementedError(f"Generation not implemented for {self.config.provider}")
+
+    def _generate_vllm(
+        self,
+        prompt: str,
+        system_message: Optional[str],
+        temperature: float,
+        max_tokens: int,
+        **kwargs
+    ) -> str:
+        """Generate using vLLM engine."""
+        # Format prompt with system message
+        if system_message:
+            # Use chat template if available
+            try:
+                # Try to get tokenizer for chat template
+                tokenizer = self.vllm_engine.get_tokenizer()
+                messages = []
+                if system_message:
+                    messages.append({"role": "system", "content": system_message})
+                messages.append({"role": "user", "content": prompt})
+
+                formatted_prompt = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True
+                )
+            except:
+                # Fallback: simple concatenation
+                formatted_prompt = f"{system_message}\n\n{prompt}"
+        else:
+            formatted_prompt = prompt
+
+        # Create sampling params
+        sampling_params = SamplingParams(
+            temperature=temperature,
+            max_tokens=max_tokens,
+            top_p=self.config.top_p,
+            **kwargs
+        )
+
+        # Generate
+        outputs = self.vllm_engine.generate([formatted_prompt], sampling_params)
+
+        # Return first output
+        return outputs[0].outputs[0].text
 
     def extract_entities_relations(
         self,

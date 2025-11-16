@@ -32,7 +32,7 @@ classifiers = [
 
 dependencies = [
     # Core dependencies
-    "numpy>=1.24.0",
+    "numpy>=1.24.0,<2.0.0",
     "scipy>=1.10.0",
     "pandas>=2.0.0",
 
@@ -41,16 +41,16 @@ dependencies = [
     "rdflib>=7.0.0",
     "SPARQLWrapper>=2.0.0",
 
-    # Deep learning
-    "torch>=2.0.0",
-    "torch-geometric>=2.3.0",
-    "dgl>=1.1.0",
+    # Deep learning (compatible with vLLM)
+    "torch>=2.1.0,<2.5.0",
+    "transformers>=4.40.0",
+    "accelerate>=0.20.0",
 
-    # NLP and LLMs
-    "transformers>=4.30.0",
+    # NLP and embeddings
     "sentence-transformers>=2.2.0",
-    "langchain>=0.1.0",
-    "langchain-community>=0.0.20",
+    "tokenizers>=0.15.0",
+
+    # LLM APIs (optional, for fallback)
     "openai>=1.0.0",
     "anthropic>=0.18.0",
 
@@ -81,6 +81,27 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Production deployment with vLLM for H200 GPU
+production = [
+    "vllm>=0.4.0",
+    "ray>=2.9.0",  # For distributed inference
+    "triton>=2.1.0",  # For optimized kernels
+    "xformers>=0.0.23",  # Memory-efficient attention
+    "flash-attn>=2.5.0",  # Flash attention for speed
+]
+
+# Graph neural networks (optional, heavy)
+graph = [
+    "torch-geometric>=2.3.0",
+    "dgl>=1.1.0",
+]
+
+# LangChain integration (optional)
+langchain = [
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.20",
+]
+
 dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
@@ -89,6 +110,8 @@ dev = [
     "ruff>=0.0.280",
     "mypy>=1.4.0",
     "pre-commit>=3.3.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
 ]
 
 docs = [
@@ -98,7 +121,7 @@ docs = [
 ]
 
 all = [
-    "neuralog[dev,docs]",
+    "neuralog[production,graph,langchain,dev,docs]",
 ]
 
 [project.urls]

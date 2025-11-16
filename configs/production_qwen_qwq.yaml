@@ -1,0 +1,42 @@
+# Qwen QwQ Configuration (Single H200)
+# Optimized for Qwen/QwQ-32B-Preview on single H200 GPU
+
+llm:
+  provider: "vllm"
+  model: "Qwen/QwQ-32B-Preview"
+
+  # Inference params
+  temperature: 0.1
+  max_tokens: 4096
+  top_p: 0.95
+
+  # Single H200 setup
+  tensor_parallel_size: 1
+  gpu_memory_utilization: 0.90
+  max_model_len: 32768  # QwQ supports long context
+  trust_remote_code: true
+  dtype: "bfloat16"
+
+  # Optimizations
+  enable_prefix_caching: true
+  use_v2_block_manager: true
+  max_num_seqs: 256
+
+  # QwQ-specific (reasoning model)
+  enforce_eager: false
+  disable_log_stats: false
+
+ontology:
+  reasoner: "elk"
+  enable_reasoning: true
+
+embedding:
+  model: "sentence-transformers/all-mpnet-base-v2"
+  device: "cuda"
+  batch_size: 128
+
+verification:
+  enable_verification: true
+  solver: "z3"
+
+log_level: "INFO"

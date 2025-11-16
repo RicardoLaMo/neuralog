@@ -1,0 +1,44 @@
+# DeepSeek R1 Configuration (Multi-GPU)
+# Optimized for 4x H200 GPUs (671B parameter model)
+
+llm:
+  provider: "vllm"
+  model: "deepseek-ai/DeepSeek-R1"
+
+  # Inference params
+  temperature: 0.1
+  max_tokens: 8192
+  top_p: 0.95
+
+  # Multi-GPU setup for 671B model
+  tensor_parallel_size: 4  # 4x H200 GPUs
+  pipeline_parallel_size: 1
+  gpu_memory_utilization: 0.95  # Higher utilization with 4 GPUs
+  max_model_len: 16384  # DeepSeek R1 supports long context
+  trust_remote_code: true
+  dtype: "bfloat16"
+
+  # H200 optimizations
+  enable_prefix_caching: true
+  use_v2_block_manager: true
+  max_num_seqs: 512  # Large batch for multi-GPU
+  distributed_executor_backend: "ray"
+
+  # DeepSeek R1 specific
+  enforce_eager: false  # Use CUDA graphs
+  max_parallel_loading_workers: 4
+
+ontology:
+  reasoner: "elk"
+  enable_reasoning: true
+
+embedding:
+  model: "sentence-transformers/all-mpnet-base-v2"
+  device: "cuda:0"  # Use first GPU
+  batch_size: 256
+
+verification:
+  enable_verification: true
+  solver: "z3"
+
+log_level: "INFO"

@@ -1,0 +1,27 @@
+# vLLM Server Mode Configuration
+# Use this to run vLLM as an OpenAI-compatible API server
+
+llm:
+  provider: "vllm-server"  # Client mode for vLLM server
+  model: "Qwen/QwQ-32B-Preview"  # Must match server model
+  base_url: "http://localhost:8000/v1"
+
+  # Inference params
+  temperature: 0.1
+  max_tokens: 4096
+  top_p: 0.95
+
+ontology:
+  reasoner: "elk"
+  enable_reasoning: true
+
+embedding:
+  model: "sentence-transformers/all-mpnet-base-v2"
+  device: "cuda"
+  batch_size: 128
+
+verification:
+  enable_verification: true
+  solver: "z3"
+
+log_level: "INFO"
