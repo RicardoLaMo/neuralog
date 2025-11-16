@@ -122,6 +122,74 @@ export NEURALOG_LLM_PROVIDER="openai"
 export NEURALOG_LLM_MODEL="gpt-4"
 ```
 
+## Production Deployment
+
+For production deployments with **vLLM on NVIDIA H200 GPUs**, NeuraLog supports high-performance inference with models like DeepSeek R1 (671B), Qwen/QwQ-32B, and others.
+
+### Quick Production Setup
+
+```bash
+# Install production dependencies
+pip install -e ".[production]"
+
+# Start with recommended model (QwQ-32B on single H200)
+python -m neuralog --config configs/production_qwen_qwq.yaml
+
+# Or run vLLM as OpenAI-compatible server
+./scripts/start_vllm_server.sh Qwen/QwQ-32B-Preview 1
+python -m neuralog --config configs/production_vllm_server.yaml
+```
+
+### Supported Models
+
+| Model | Parameters | GPUs | Config File |
+|-------|-----------|------|-------------|
+| **Qwen/QwQ-32B** ⭐ | 32B | 1x H200 | `production_qwen_qwq.yaml` |
+| DeepSeek R1 | 671B | 4x H200 | `production_deepseek_r1.yaml` |
+| Qwen2.5-72B | 72B | 2x H200 | Custom |
+| Llama-3.1-70B | 70B | 2x H200 | Custom |
+
+⭐ **Recommended** for most users: Best balance of performance and cost
+
+### Key Benefits
+
+- **2-4x faster inference** than standard transformers
+- **50% less memory** with PagedAttention
+- **Multi-GPU support** for large models
+- **Prefix caching** for repeated prompts
+- **OpenAI-compatible API** for easy integration
+
+### Example: Financial Compliance
+
+```python
+from neuralog import Engine
+from neuralog.core.config import Config
+
+# Load production config with vLLM
+config = Config.from_yaml("configs/production_qwen_qwq.yaml")
+engine = Engine(config)
+
+# Extract from regulatory text
+policy_text = """
+Section 226.9 requires creditors to provide 45-day advance notice
+before increasing interest rates on credit card accounts.
+"""
+
+kg = engine.extract_with_semantic_workspace(
+    text=policy_text,
+    workspace_name="TILA_regulations"
+)
+
+# Neurosymbolic reasoning (not cosine similarity!)
+# Symbolic rules + graph patterns + temporal logic
+```
+
+**📖 Full Guide**: See [docs/PRODUCTION_DEPLOYMENT.md](docs/PRODUCTION_DEPLOYMENT.md) for:
+- Hardware requirements and model selection
+- Configuration and performance tuning
+- Multi-GPU setup for large models
+- Troubleshooting and optimization tips
+
 ## Quick Start
 
 ### Basic Information Extraction
@@ -234,6 +302,7 @@ See the `examples/` directory:
 - `simple_extraction.py`: Basic usage
 - `biomedical_extraction.py`: Domain-specific extraction with ontology
 - **`semantic_workspace_demo.py`**: **NEW** - Demonstrates graph dynamics vs. chunking
+- **`financial_compliance_demo.ipynb`**: **NEW** - Jupyter notebook showing neurosymbolic compliance analysis
 
 Run examples:
 
@@ -241,7 +310,23 @@ Run examples:
 python examples/simple_extraction.py
 python examples/biomedical_extraction.py
 python examples/semantic_workspace_demo.py  # NEW: See semantic layer in action!
+
+# Run Jupyter notebook
+jupyter notebook examples/financial_compliance_demo.ipynb
 ```
+
+### Featured: Financial Compliance Demo
+
+The [financial_compliance_demo.ipynb](examples/financial_compliance_demo.ipynb) notebook demonstrates:
+
+1. **Policy Extraction**: Extract rules from TILA Regulation Z (financial regulations)
+2. **Complaint Analysis**: Process CFPB customer complaints
+3. **Violation Detection**: Neurosymbolic reasoning (NOT cosine similarity!)
+   - Symbolic policy rules
+   - Graph pattern matching
+   - Temporal reasoning (45-day notice periods, etc.)
+   - Causal chain inference
+4. **Explainable Results**: Full reasoning steps with audit trails
 
 ## Use Cases
 
