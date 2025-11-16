@@ -9,7 +9,7 @@ A modern framework combining symbolic reasoning with neural learning for reliabl
 
 ## Overview
 
-NeuraLog integrates four cutting-edge approaches in neural symbolic AI:
+NeuraLog integrates **five** cutting-edge approaches in neural symbolic AI:
 
 1. **Neurosymbolic Formalization & Verification** (inspired by [arxiv:2511.09008](https://arxiv.org/abs/2511.09008))
    - Formal verification for >99% soundness guarantees
@@ -31,6 +31,19 @@ NeuraLog integrates four cutting-edge approaches in neural symbolic AI:
    - Axiom verbalization for LLM consumption
    - Pre-built tools for matching and subsumption
 
+5. **Semantic Layer with Graph Dynamics** (**NEW** - replaces chunking!)
+   - **Generative Semantic Workspace** ([arxiv:2511.07587](https://arxiv.org/abs/2511.07587))
+     - Space-time anchored narrative representations
+     - 20% better performance on EpBench
+     - 51% more token-efficient than traditional RAG
+   - **Episodic Transformer Memory** ([episodic-transformer-memory-ppo](https://github.com/MarcoMeter/episodic-transformer-memory-ppo))
+     - TransformerXL with sliding window
+     - Long-range context without chunking
+   - **Graph Dynamics Tracker**
+     - Entity evolution over time
+     - Temporal edges and state transitions
+     - Narrative structure preservation
+
 ## Key Features
 
 - 🧠 **Hybrid Reasoning**: Combines neural predictions with symbolic validation
@@ -40,6 +53,9 @@ NeuraLog integrates four cutting-edge approaches in neural symbolic AI:
 - 🚀 **Scalable**: Efficient processing of large document collections
 - 🔌 **Modular**: Clean interfaces, pluggable components
 - 🌐 **Multi-LLM**: Supports OpenAI, Anthropic, and local models via Ollama
+- 🆕 **Graph Dynamics**: Tracks entity evolution over time, not static snapshots
+- 📖 **Narrative Structure**: Preserves temporal and spatial coherence (no chunking!)
+- 🧩 **Episodic Memory**: Transformer-based long-range context
 
 ## Architecture
 
@@ -185,18 +201,46 @@ similar = engine.graph_embedder.find_similar_entities(
 )
 ```
 
+### Semantic Workspace (NEW - Replaces Chunking!)
+
+```python
+# Extract with semantic workspace approach
+# Uses graph dynamics and episodic memory instead of chunks
+kg = engine.extract_with_semantic_workspace(
+    text=narrative_text,
+    workspace_name="my_narrative",
+    use_episodic_memory=True
+)
+
+# Track entity evolution over time
+trajectory = engine.graph_dynamics.get_entity_trajectory("entity_uri")
+for state in trajectory:
+    print(f"Position {state.narrative_position}: {state.properties}")
+
+# Query episodic memory
+context = engine.episodic_memory.get_context(
+    query="What happened at Stanford?",
+    top_k=10
+)
+
+# Build temporal graph snapshot
+snapshot = engine.graph_dynamics.build_snapshot_graph(narrative_position=5)
+```
+
 ## Examples
 
 See the `examples/` directory:
 
 - `simple_extraction.py`: Basic usage
 - `biomedical_extraction.py`: Domain-specific extraction with ontology
+- **`semantic_workspace_demo.py`**: **NEW** - Demonstrates graph dynamics vs. chunking
 
 Run examples:
 
 ```bash
 python examples/simple_extraction.py
 python examples/biomedical_extraction.py
+python examples/semantic_workspace_demo.py  # NEW: See semantic layer in action!
 ```
 
 ## Use Cases

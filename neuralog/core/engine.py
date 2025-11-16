@@ -48,6 +48,12 @@ class Engine:
         self._triple_store = None
         self._vector_store = None
 
+        # Semantic layer components (new)
+        self._semantic_workspace = None
+        self._episodic_memory = None
+        self._graph_dynamics = None
+        self._semantic_segmenter = None
+
         logger.info(f"NeuraLog Engine initialized with config: {self.config}")
 
     @property
@@ -114,6 +120,49 @@ class Engine:
             from neuralog.integration import FormalVerifier
             self._verifier = FormalVerifier(self.config.verification)
         return self._verifier
+
+    @property
+    def semantic_workspace(self):
+        """Lazy load semantic workspace."""
+        if self._semantic_workspace is None:
+            from neuralog.semantic import GenerativeSemanticWorkspace
+            self._semantic_workspace = GenerativeSemanticWorkspace(
+                name="default_workspace",
+                llm_interface=self.llm_interface,
+                ontology_manager=self.ontology_manager
+            )
+        return self._semantic_workspace
+
+    @property
+    def episodic_memory(self):
+        """Lazy load episodic memory."""
+        if self._episodic_memory is None:
+            from neuralog.semantic import EpisodicMemory
+            self._episodic_memory = EpisodicMemory(
+                embedding_model=self.embedding_model,
+                embedding_dim=self.config.embedding.embedding_dim,
+                memory_window=128
+            )
+        return self._episodic_memory
+
+    @property
+    def graph_dynamics(self):
+        """Lazy load graph dynamics tracker."""
+        if self._graph_dynamics is None:
+            from neuralog.semantic import GraphDynamicsTracker
+            self._graph_dynamics = GraphDynamicsTracker(name="default_dynamics")
+        return self._graph_dynamics
+
+    @property
+    def semantic_segmenter(self):
+        """Lazy load semantic segmenter."""
+        if self._semantic_segmenter is None:
+            from neuralog.semantic import SemanticSegmenter
+            self._semantic_segmenter = SemanticSegmenter(
+                llm_interface=self.llm_interface,
+                strategy="hybrid"
+            )
+        return self._semantic_segmenter
 
     def load_ontology(self, ontology_path: Union[str, Path]) -> None:
         """
@@ -198,6 +247,94 @@ class Engine:
         result = self.extract_knowledge(text, **kwargs)
         kg_name = kg_name or f"kg_{hash(text)}"
         return result.to_knowledge_graph(kg_name)
+
+    def extract_with_semantic_workspace(
+        self,
+        text: str,
+        workspace_name: Optional[str] = None,
+        use_episodic_memory: bool = True
+    ) -> KnowledgeGraph:
+        """
+        Extract knowledge using semantic workspace approach (NEW).
+
+        This replaces chunking with graph dynamics:
+        1. Segments text semantically (events, entities, temporal)
+        2. Maintains episodic memory across segments
+        3. Tracks entity evolution via graph dynamics
+        4. Builds coherent narrative structure
+
+        Based on:
+        - Generative Semantic Workspace (arxiv:2511.07587)
+        - Episodic Transformer Memory
+
+        Args:
+            text: Input text
+            workspace_name: Name for semantic workspace
+            use_episodic_memory: Whether to use transformer memory
+
+        Returns:
+            KnowledgeGraph with temporal structure
+        """
+        logger.info(
+            f"Extracting with semantic workspace (length: {len(text)}, "
+            f"episodic_memory: {use_episodic_memory})"
+        )
+
+        # Create or get workspace
+        if workspace_name:
+            from neuralog.semantic import GenerativeSemanticWorkspace
+            workspace = GenerativeSemanticWorkspace(
+                name=workspace_name,
+                llm_interface=self.llm_interface,
+                ontology_manager=self.ontology_manager
+            )
+        else:
+            workspace = self.semantic_workspace
+
+        # Ingest observation (replaces chunking!)
+        events = workspace.ingest_observation(text)
+
+        logger.info(f"Extracted {len(events)} semantic events")
+
+        # Update graph dynamics
+        for event in events:
+            # Update entity states
+            for entity in event.entities:
+                self.graph_dynamics.update_entity_state(
+                    entity=entity,
+                    properties=entity.attributes,
+                    narrative_position=event.narrative_position,
+                    event_id=event.event_id
+                )
+
+            # Add temporal edges
+            for triple in event.relations:
+                self.graph_dynamics.add_temporal_edge(
+                    triple=triple,
+                    narrative_position=event.narrative_position,
+                    event_id=event.event_id
+                )
+
+            # Add to episodic memory if enabled
+            if use_episodic_memory:
+                self.episodic_memory.add_observation(
+                    observation=event.metadata.get("description", ""),
+                    metadata={
+                        "entities": [e.uri for e in event.entities],
+                        "event_type": event.event_type,
+                        "position": event.narrative_position
+                    }
+                )
+
+        # Convert workspace to knowledge graph
+        kg = workspace.to_knowledge_graph()
+
+        # Add graph dynamics metadata
+        kg.metadata["graph_dynamics"] = self.graph_dynamics.export_temporal_graph()
+        kg.metadata["episodic_memory"] = self.episodic_memory.get_statistics()
+
+        logger.info(f"Built KG with {len(kg.entities)} entities, {len(kg.triples)} triples")
+        return kg
 
     def query(
         self,
